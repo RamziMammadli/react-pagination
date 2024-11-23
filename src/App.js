@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 
-function App() {
+const App = () => {
+
+  const [data, setData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [productsPerPage, setProductsPerPage] = useState(8)
+
+  useEffect(() => {
+    axios.get('https://dummyjson.com/products')
+    .then(res => {
+      setData(res.data.products)
+    })
+  }, [])
+
+  const lastIndexProducts = currentPage * productsPerPage
+  const firstIndexProducts = lastIndexProducts - productsPerPage
+
+  const currentproducts = data.slice(firstIndexProducts, lastIndexProducts)
+
+  let pages = []
+
+  for(let i = 1 ; i <= Math.ceil(data.length/productsPerPage); i++) {
+    pages.push(i)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {currentproducts && currentproducts.map(item => {
+        return <p>{item.title}</p>
+      })}
+      {pages && pages.map(item => {
+        return <button onClick={() => setCurrentPage(item)}>{item}</button>
+      })}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
